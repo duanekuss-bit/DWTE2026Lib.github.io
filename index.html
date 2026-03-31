@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DWTE 2026 | From Personal Healing to Planetary Survival</title>
+    <title>DWTE 2026 | The Great Transition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,16 +11,17 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #020617; /* Slate 950 */
+            background-color: #020617;
             color: #f8fafc;
+            overflow-x: hidden;
         }
         .serif { font-family: 'Playfair Display', serif; }
         .glass {
-            background: rgba(15, 23, 42, 0.9);
+            background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .page-content { display: none; }
+        .page-content { display: none; min-height: 100vh; }
         .page-content.active { display: block; }
         
         .accent-gradient {
@@ -28,13 +29,25 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .nav-link.active { color: #10b981; font-weight: 700; }
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link.active { color: #10b981; }
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #10b981;
+        }
         
-        /* Fixed visibility for titles and cards */
         .reveal {
             opacity: 0;
             transform: translateY(20px);
-            transition: all 0.8s ease-out;
+            transition: all 0.6s ease-out;
         }
         .reveal.visible {
             opacity: 1;
@@ -47,9 +60,19 @@
         }
         .resource-card:hover {
             transform: translateY(-4px);
-            background: rgba(15, 23, 42, 1);
+            background: rgba(30, 41, 59, 0.5);
             border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.2);
+            box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Mobile Menu Overlay */
+        #mobile-menu {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #020617;
+            z-index: 100;
+            padding: 2rem;
         }
     </style>
 </head>
@@ -57,313 +80,317 @@
 
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 glass">
-        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-            <button onclick="showPage('home')" class="text-xl font-bold tracking-tighter flex items-center">
-                DWTE <span class="text-emerald-400 ml-1">2026</span>
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <button onclick="showPage('home')" class="text-xl font-bold tracking-tighter flex items-center group">
+                DWTE <span class="text-emerald-400 ml-1 group-hover:text-emerald-300 transition">2026</span>
             </button>
             
-            <!-- Desktop/Tablet Nav -->
-            <div class="hidden md:flex items-center space-x-4 text-[10px] font-bold uppercase tracking-[0.15em] text-slate-400">
-                <button onclick="showPage('home')" class="nav-link px-2 py-1 hover:text-white transition">Home</button>
-                <button onclick="showPage('thesis')" class="nav-link px-2 py-1 hover:text-white transition">Thesis</button>
-                <button onclick="showPage('equation')" class="nav-link px-2 py-1 hover:text-white transition text-nowrap">The Equation</button>
-                <button onclick="showPage('pillars')" class="nav-link px-2 py-1 hover:text-white transition">Pillars</button>
-                <button onclick="showPage('stories')" class="nav-link px-2 py-1 hover:text-white transition">Stories</button>
-                <button onclick="showPage('library')" class="nav-link px-2 py-1 hover:text-emerald-400 transition text-emerald-500 border border-emerald-500/20 rounded-md px-3">Library</button>
+            <!-- Desktop Nav (Visible on MD and up) -->
+            <div class="hidden md:flex items-center space-x-6 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                <button onclick="showPage('home')" class="nav-link">Home</button>
+                <button onclick="showPage('thesis')" class="nav-link">Thesis</button>
+                <button onclick="showPage('equation')" class="nav-link">Equation</button>
+                <button onclick="showPage('pillars')" class="nav-link">Pillars</button>
+                <button onclick="showPage('library')" class="nav-link text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded">Library</button>
+                <button onclick="showPage('action')" class="nav-link">Action</button>
             </div>
 
-            <a href="https://youtu.be/_FjQT1H79Ho" target="_blank" rel="noopener noreferrer" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-[10px] font-bold transition flex items-center">
-                WATCH <span class="hidden sm:inline ml-1">TALK</span>
+            <!-- Mobile Toggle -->
+            <button onclick="toggleMobileMenu()" class="md:hidden text-slate-300 p-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>
+
+            <a href="https://youtu.be/_FjQT1H79Ho" target="_blank" class="hidden sm:flex bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-[10px] font-bold transition uppercase tracking-widest">
+                Watch the Film
             </a>
         </div>
     </nav>
 
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="flex-col space-y-8 text-center pt-24">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-slate-400">Close</button>
+        <button onclick="showPage('home'); toggleMobileMenu()" class="text-2xl font-serif">Home</button>
+        <button onclick="showPage('thesis'); toggleMobileMenu()" class="text-2xl font-serif">The Thesis</button>
+        <button onclick="showPage('equation'); toggleMobileMenu()" class="text-2xl font-serif">The Equation</button>
+        <button onclick="showPage('pillars'); toggleMobileMenu()" class="text-2xl font-serif">The Pillars</button>
+        <button onclick="showPage('library'); toggleMobileMenu()" class="text-2xl font-serif text-emerald-400">Resource Library</button>
+        <button onclick="showPage('action'); toggleMobileMenu()" class="text-2xl font-serif">Action Map</button>
+    </div>
+
     <!-- Page: HOME -->
-    <main id="page-home" class="page-content active pt-32 min-h-screen">
+    <main id="page-home" class="page-content active pt-32">
         <header class="max-w-6xl mx-auto px-6 text-center py-20">
             <h1 class="reveal text-5xl md:text-8xl font-bold leading-tight mb-8 serif italic">
-                The <span class="accent-gradient">Collective Divorce</span> <br>from Fossil Fuels.
+                From <span class="accent-gradient">Self-Help</span> <br>to Systems Health.
             </h1>
             <p class="reveal text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
-                What began as a self-help book for personal trauma is now a survival manual for the biosphere. 
-                The industrial era is ending. Are you ready to sign the papers?
+                We are in a toxic, abusive relationship with the industrial era. 
+                Staying in this narrative is fatal. The bravery to file for divorce is the defining choice of 2026.
             </p>
             <div class="reveal flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-                <button onclick="showPage('thesis')" class="bg-white text-slate-900 px-8 py-4 rounded-xl font-bold hover:bg-slate-200 transition">
-                    Start the Journey
+                <button onclick="showPage('thesis')" class="bg-white text-slate-900 px-10 py-4 rounded-xl font-bold hover:bg-slate-200 transition">
+                    Explore Framework
                 </button>
-                <button onclick="showPage('library')" class="bg-emerald-900/40 text-emerald-400 border border-emerald-500/30 px-8 py-4 rounded-xl font-bold hover:bg-emerald-900/60 transition">
-                    Explorer's Library
+                <button onclick="showPage('library')" class="bg-emerald-900/40 text-emerald-400 border border-emerald-500/30 px-10 py-4 rounded-xl font-bold hover:bg-emerald-900/60 transition">
+                    Access Explorer Library
                 </button>
             </div>
             
-            <div class="reveal mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 w-full border-t border-slate-800 pt-12">
-                <div class="text-left p-4">
-                    <span class="text-emerald-500 font-bold block mb-2">01. Personal Healing</span>
-                    <p class="text-sm text-slate-400 italic">Navigating grief and divorce provides the blueprint for systemic change.</p>
+            <div class="reveal mt-32 grid grid-cols-1 md:grid-cols-3 gap-12 text-left border-t border-slate-800 pt-16">
+                <div>
+                    <h4 class="text-emerald-500 font-bold mb-4">The Collective Secret</h4>
+                    <p class="text-sm text-slate-400">The "Elephant" is no longer just personal trauma—it is our shared denial of ecological overshoot.</p>
                 </div>
-                <div class="text-left p-4">
-                    <span class="text-blue-500 font-bold block mb-2">02. Systems Health</span>
-                    <p class="text-sm text-slate-400 italic">Treating the Earth not as a resource, but as a partner in an abusive relationship.</p>
+                <div>
+                    <h4 class="text-blue-500 font-bold mb-4">Biophilic Energy</h4>
+                    <p class="text-sm text-slate-400">Repurposing human talent toward the restoration of soil, water, and local community resilience.</p>
                 </div>
-                <div class="text-left p-4">
-                    <span class="text-emerald-500 font-bold block mb-2">03. Radical Hope</span>
-                    <p class="text-sm text-slate-400 italic">A stance of action in the face of terrible odds, independent of outcomes.</p>
+                <div>
+                    <h4 class="text-emerald-500 font-bold mb-4">Deep Time Ethics</h4>
+                    <p class="text-sm text-slate-400">Calculating your legacy across seven generations. The multiplier that changes everything.</p>
                 </div>
             </div>
         </header>
     </main>
 
     <!-- Page: THESIS -->
-    <main id="page-thesis" class="page-content pt-32 pb-24 min-h-screen">
+    <main id="page-thesis" class="page-content pt-32 pb-24">
         <div class="max-w-4xl mx-auto px-6">
-            <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-sm mb-4">Core Thesis</h2>
-            <h3 class="reveal text-5xl font-bold serif mb-12 leading-tight">From Self-Help to Systems Health</h3>
+            <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">Foundations</h2>
+            <h3 class="reveal text-5xl font-bold serif mb-12">The Industrial Divorce</h3>
             
-            <div class="space-y-12 text-lg text-slate-300 leading-relaxed font-light">
-                <p class="reveal">
-                    The original framework was designed to help individuals confront <span class="text-white font-semibold">emotional secrets</span>. 
-                    The 2026 update applies those same principles to the entire planet.
+            <div class="space-y-12 text-lg text-slate-300 leading-relaxed">
+                <p class="reveal font-light">
+                    The 2026 update of <span class="text-white font-semibold italic">Dance With the Elephant</span> bridges the gap between individual psychological resilience and planetary survival. 
+                    It argues that the tools needed to survive a personal divorce—honesty, grief processing, and decoupling—are the exact tools required for our civilization to exit the fossil-fuel era.
                 </p>
                 
-                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                    <h4 class="text-white font-bold mb-4 flex items-center">
-                        <svg class="w-5 h-5 mr-3 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        The Gaslighting Metaphor
-                    </h4>
-                    <p class="text-slate-400 italic">
+                <div class="reveal bg-slate-900/50 p-10 rounded-3xl border border-slate-800 relative">
+                    <div class="absolute -top-4 -left-4 bg-emerald-500 text-slate-950 px-4 py-1 rounded text-xs font-bold uppercase">The Metacrisis</div>
+                    <p class="text-slate-300 italic mb-6 text-xl leading-relaxed">
                         "The planet screams 'I'm hurting,' while our economic system responds with gaslighting: 'You're fine. Stop overreacting. Let's drill a little more.'"
                     </p>
+                    <p class="text-sm text-slate-500">— DWTE 2.0 (The Systems-Health Update)</p>
                 </div>
 
-                <p class="reveal">
-                    We are in an abusive relationship with the biosphere. Filing for divorce from the industrial era is the defining choice of our time.
-                </p>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="reveal p-6 border border-slate-800 rounded-2xl">
+                        <h4 class="font-bold text-white mb-2">Solastalgia</h4>
+                        <p class="text-sm text-slate-400 italic">The pain of missing a place while you are still standing in it. Watching home change beyond recognition.</p>
+                    </div>
+                    <div class="reveal p-6 border border-slate-800 rounded-2xl">
+                        <h4 class="font-bold text-white mb-2">Urban Reality Gap</h4>
+                        <p class="text-sm text-slate-400 italic">The disconnect between the digital convenience of the city and the biological decay of the countryside.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <!-- Page: EQUATION -->
-    <main id="page-equation" class="page-content pt-32 pb-24 min-h-screen">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="reveal text-blue-400 font-bold uppercase tracking-widest text-sm mb-4">The Methodology</h2>
-                <h3 class="reveal text-5xl font-bold serif mb-6">Life's Cosmic Equation 2.0</h3>
-                <div class="reveal text-3xl font-light text-slate-400 serif italic">(CP + RC + F) × T = Legacy</div>
+    <main id="page-equation" class="page-content pt-32 pb-24">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="reveal text-blue-400 font-bold uppercase tracking-widest text-xs mb-4">The Methodology</h2>
+            <h3 class="reveal text-6xl font-bold serif mb-12 leading-tight">Life's Cosmic Equation 2.0</h3>
+            
+            <div class="reveal inline-block bg-slate-900 border border-slate-800 p-12 rounded-[4rem] mb-20 shadow-2xl">
+                <span class="text-4xl md:text-6xl accent-gradient serif italic font-bold">
+                    (CP + RC + F) &times; T = Legacy
+                </span>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
-                    <div class="text-emerald-500 font-bold mb-2">V1: Creative Power &rarr; Biophilic Energy</div>
-                    <p class="text-slate-400 leading-relaxed">Shift your spark from personal advancement to cosmic restoration. Recharging the soil, not just your brain.</p>
+            <div class="grid md:grid-cols-4 gap-6 text-left">
+                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
+                    <h4 class="text-emerald-400 font-bold mb-4 uppercase text-xs tracking-widest">V1: Creative Power</h4>
+                    <p class="text-sm text-slate-400">Transitioning from "Personal Spark" to <span class="text-white">Biophilic Energy</span>. Recharging the biosphere.</p>
                 </div>
-                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
-                    <div class="text-blue-500 font-bold mb-2">V2: Receptive Choice &rarr; Decoupling</div>
-                    <p class="text-slate-400 leading-relaxed">Actively filtering perceptions to steer away from the matrix of endless consumption.</p>
+                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
+                    <h4 class="text-emerald-400 font-bold mb-4 uppercase text-xs tracking-widest">V2: Receptive Choice</h4>
+                    <p class="text-sm text-slate-400">The rudder of <span class="text-white">Decoupling</span>. Choosing to step out of the matrix of infinite growth.</p>
                 </div>
-                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
-                    <div class="text-emerald-500 font-bold mb-2">V3: Faith &rarr; Radical Hope</div>
-                    <p class="text-slate-400 leading-relaxed">Acting in the face of terrible odds because it is the right thing to do, regardless of success.</p>
+                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
+                    <h4 class="text-emerald-400 font-bold mb-4 uppercase text-xs tracking-widest">V3: Faith</h4>
+                    <p class="text-sm text-slate-400"><span class="text-white">Radical Hope</span>. Action as a stance, not a prediction of guaranteed success.</p>
                 </div>
-                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
-                    <div class="text-blue-500 font-bold mb-2">V4: Time &rarr; Deep Time</div>
-                    <p class="text-slate-400 leading-relaxed">Intergenerational justice spanning seven generations. Every choice multiplied by centuries of impact.</p>
+                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-emerald-500/30">
+                    <h4 class="text-blue-400 font-bold mb-4 uppercase text-xs tracking-widest">Multiplier: Time</h4>
+                    <p class="text-sm text-slate-400"><span class="text-white">Deep Time</span>. Measuring impact not in days, but in seven generations of planetary health.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Page: PILLARS -->
-    <main id="page-pillars" class="page-content pt-32 pb-24 min-h-screen">
+    <main id="page-pillars" class="page-content pt-32 pb-24">
         <div class="max-w-5xl mx-auto px-6">
-            <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-sm mb-4 text-center">Ethics of Interdependence</h2>
-            <h3 class="reveal text-5xl font-bold serif mb-16 text-center">The Four Pillars</h3>
-            <div class="space-y-12">
-                <div class="reveal flex gap-8">
-                    <span class="text-4xl font-serif text-emerald-500/40 italic">01</span>
+            <div class="text-center mb-20">
+                <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">Ethics of Interdependence</h2>
+                <h3 class="reveal text-5xl font-bold serif">The Four Pillars</h3>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <div class="reveal flex gap-6 group">
+                    <div class="text-6xl font-serif text-emerald-500/20 italic group-hover:text-emerald-500/40 transition">01</div>
                     <div>
                         <h4 class="text-2xl font-bold mb-2">Egocentric Respect</h4>
-                        <p class="text-slate-400">Honoring biological limits. Not taking more than the system can regenerate.</p>
+                        <p class="text-slate-400 leading-relaxed">Moving from self-help to planetary stewardship. Active listening to biological limits and boundaries.</p>
                     </div>
                 </div>
-                <div class="reveal flex gap-8 border-t border-slate-800 pt-8">
-                    <span class="text-4xl font-serif text-emerald-500/40 italic">02</span>
+                <div class="reveal flex gap-6 group">
+                    <div class="text-6xl font-serif text-emerald-500/20 italic group-hover:text-emerald-500/40 transition">02</div>
                     <div>
                         <h4 class="text-2xl font-bold mb-2">Systemic Trust</h4>
-                        <p class="text-slate-400">Community resilience. Networks of mutual aid as survival technology.</p>
+                        <p class="text-slate-400 leading-relaxed">Interpersonal trust as survival technology. Networks of mutual aid in a fracturing world.</p>
                     </div>
                 </div>
-                <div class="reveal flex gap-8 border-t border-slate-800 pt-8">
-                    <span class="text-4xl font-serif text-emerald-500/40 italic">03</span>
+                <div class="reveal flex gap-6 group">
+                    <div class="text-6xl font-serif text-emerald-500/20 italic group-hover:text-emerald-500/40 transition">03</div>
                     <div>
-                        <h4 class="text-2xl font-bold mb-2">Integrity</h4>
-                        <p class="text-slate-400">Telling uncomfortable truths about our collective planetary predicament.</p>
+                        <h4 class="text-2xl font-bold mb-2">Integrity as Truth</h4>
+                        <p class="text-slate-400 leading-relaxed">The bravery to tell the collective secret. A shift from "saving face" to "saving the species."</p>
                     </div>
                 </div>
-                <div class="reveal flex gap-8 border-t border-slate-800 pt-8">
-                    <span class="text-4xl font-serif text-emerald-500/40 italic">04</span>
+                <div class="reveal flex gap-6 group">
+                    <div class="text-6xl font-serif text-emerald-500/20 italic group-hover:text-emerald-500/40 transition">04</div>
                     <div>
                         <h4 class="text-2xl font-bold mb-2">Post-Growth Living</h4>
-                        <p class="text-slate-400">Decoupling progress from material accumulation. Thriving within boundaries.</p>
+                        <p class="text-slate-400 leading-relaxed">Decoupling fulfillment from consumption. Learning the spirited dance of steady-state life.</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Page: STORIES -->
-    <main id="page-stories" class="page-content pt-32 pb-24 min-h-screen">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="reveal text-blue-400 font-bold uppercase tracking-widest text-sm mb-4">Case Studies</h2>
-            <h3 class="reveal text-5xl font-bold serif mb-16">Stories Worth Remembering</h3>
-            <div class="grid md:grid-cols-2 gap-8">
-                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                    <h4 class="text-2xl font-bold mb-4 italic">The Divorce Knife</h4>
-                    <p class="text-slate-400">Duane's 12-year marriage collapse as a metaphor for humanity letting go of the industrial narrative.</p>
-                </div>
-                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                    <h4 class="text-2xl font-bold mb-4 italic">Solastalgia</h4>
-                    <p class="text-slate-400">The grief of missing a place while still standing in it. Watching home change around you.</p>
-                </div>
-                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                    <h4 class="text-2xl font-bold mb-4 italic">The Cemetery Shift</h4>
-                    <p class="text-slate-400">30 years surrounded by death proves legacy is etched in carbon, not granite.</p>
-                </div>
-                <div class="reveal bg-slate-900 p-8 rounded-3xl border border-slate-800">
-                    <h4 class="text-2xl font-bold mb-4 italic">Miles</h4>
-                    <p class="text-slate-400">The high school wrestler whose zero-point moment reminds us biology has no snooze button.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <!-- Page: LIBRARY -->
-    <main id="page-library" class="page-content pt-32 pb-24 min-h-screen">
+    <main id="page-library" class="page-content pt-32 pb-24">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16">
-                <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-sm mb-4">Resources</h2>
-                <h3 class="reveal text-5xl font-bold serif mb-6">The Explorer’s Library</h3>
-                <p class="reveal text-xl text-slate-400 max-w-2xl mx-auto">Click a title to explore the original source or archive.</p>
+            <div class="text-center mb-20">
+                <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">The Master Library</h2>
+                <h3 class="reveal text-6xl font-bold serif mb-6">The Explorer’s Library</h3>
+                <p class="reveal text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed">
+                    A curated backpack of knowledge for the journey from "Me" to "WE." All resources linked to primary sources.
+                </p>
             </div>
 
-            <!-- Library Categories -->
-            <div class="space-y-24">
-                <!-- Section 1 -->
+            <!-- Library Grid -->
+            <div class="space-y-32">
+                
+                <!-- Category I -->
                 <div class="reveal">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center">
-                        <span class="mr-4">I. Understanding the Elephant</span>
-                        <div class="h-px bg-slate-800 flex-grow"></div>
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="https://www.google.com/search?q=Denial+of+Death+Ernest+Becker" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1 group-hover:text-emerald-300">The Denial of Death</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Ernest Becker</p>
-                            <p class="text-xs text-slate-400">Foundational for understanding why society ignores planetary limits.</p>
+                    <div class="flex items-center mb-12">
+                        <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-500">I. Mortality & Overshoot</h4>
+                        <div class="h-px bg-slate-800 flex-grow ml-8"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <a href="https://www.google.com/search?tbm=bks&q=The+Denial+of+Death+Ernest+Becker" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">The Denial of Death</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Ernest Becker</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Foundational understanding of why society ignores planetary limits.</p>
                         </a>
-                        <a href="https://brenebrown.com/book/the-gifts-of-imperfection/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1 group-hover:text-emerald-300">Gifts of Imperfection</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Brené Brown</p>
-                            <p class="text-xs text-slate-400">Essential reading for developing resilience needed to face the Metacrisis.</p>
+                        <a href="https://www.thegreatsimplification.com/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">The Great Simplification</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Nate Hagens</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">A primer on the human predicament, energy, and systems thinking.</p>
                         </a>
-                        <a href="https://donellameadows.org/systems-thinking-resources/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1 group-hover:text-emerald-300">Thinking in Systems</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Donella Meadows</p>
-                            <p class="text-xs text-slate-400">Essential for understanding interconnectedness and designing solutions.</p>
+                        <a href="https://donellameadows.org/systems-thinking-resources/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Thinking in Systems</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Donella Meadows</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Essential for understanding the complex links in the metacrisis.</p>
                         </a>
-                        <a href="https://orphanwisdom.com/griefwalker/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1 group-hover:text-emerald-300">Griefwalker (Film)</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Stephen Jenkinson</p>
-                            <p class="text-xs text-slate-400">Examination of life and death, lived well by keeping the end ever-present.</p>
+                        <a href="https://orphanwisdom.com/griefwalker/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Griefwalker</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Stephen Jenkinson</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Living fully by keeping the awareness of our ending ever-present.</p>
                         </a>
                     </div>
                 </div>
 
-                <!-- Section 2 -->
+                <!-- Category II -->
                 <div class="reveal">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center">
-                        <span class="mr-4">II. The Great Story</span>
-                        <div class="h-px bg-slate-800 flex-grow"></div>
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="https://www.google.com/search?q=The+Universe+Story+Brian+Swimme" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1 group-hover:text-blue-300">The Universe Story</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Swimme & Berry</p>
-                            <p class="text-xs text-slate-400">A celebration of 13.8 billion years of interconnectedness.</p>
+                    <div class="flex items-center mb-12">
+                        <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-blue-500">II. The Great Story</h4>
+                        <div class="h-px bg-slate-800 flex-grow ml-8"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <a href="https://www.brianswimme.org/the-universe-story" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">The Universe Story</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Brian Swimme</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">13.8 billion years of unfolding cosmic interconnectedness.</p>
                         </a>
-                        <a href="https://www.google.com/search?q=Thomas+Berry+Dream+of+the+Earth" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1 group-hover:text-blue-300">Dream of the Earth</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Thomas Berry</p>
-                            <p class="text-xs text-slate-400">Breaking from the "technological trance" of endless progress.</p>
+                        <a href="https://postdoom.com/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">Post Gloom Archive</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Michael Dowd</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Adapting to reality through the lens of evolutionary spirituality.</p>
                         </a>
-                        <a href="https://kenwilber.com/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1 group-hover:text-blue-300">History of Everything</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Ken Wilber</p>
-                            <p class="text-xs text-slate-400">Explaining our place in a universe of sex, soul, and spirit.</p>
+                        <a href="https://kenwilber.com/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">History of Everything</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Ken Wilber</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Explaining our place in a universe of sex, soul, and spirit.</p>
                         </a>
-                        <a href="https://postdoom.com/michael-dowd/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1 group-hover:text-blue-300">Thank God for Evolution</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Michael Dowd</p>
-                            <p class="text-xs text-slate-400">Harmonizing religion and science for global transformation.</p>
+                        <a href="https://www.earth-overshoot-day.org/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">Earth Overshoot Day</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Global Footprint Network</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">The scientific benchmark for the biosphere's depletion.</p>
                         </a>
                     </div>
                 </div>
 
-                <!-- Section 3 -->
+                <!-- Category III -->
                 <div class="reveal">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center">
-                        <span class="mr-4">III. Nature's Compass</span>
-                        <div class="h-px bg-slate-800 flex-grow"></div>
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="https://milkweed.org/book/braiding-sweetgrass" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1">Braiding Sweetgrass</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Robin Wall Kimmerer</p>
-                            <p class="text-xs text-slate-400">Indigenous wisdom and scientific knowledge of the plant world.</p>
+                    <div class="flex items-center mb-12">
+                        <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-emerald-500">III. Nature's Compass</h4>
+                        <div class="h-px bg-slate-800 flex-grow ml-8"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <a href="https://milkweed.org/book/braiding-sweetgrass" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Braiding Sweetgrass</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Robin Wall Kimmerer</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Indigenous wisdom meeting scientific knowledge of plants.</p>
                         </a>
-                        <a href="https://www.google.com/search?q=Kirkpatrick+Sale+Dwellers+in+the+Land" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1">Dwellers in the Land</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Kirkpatrick Sale</p>
-                            <p class="text-xs text-slate-400">Foundational principles of the bioregional vision.</p>
+                        <a href="https://www.localfutures.org/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Local Futures</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Helena Norberg-Hodge</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Building resilient communities against the tide of globalization.</p>
                         </a>
-                        <a href="https://www.google.com/search?q=Toby+Hemenway+Gaia+Garden" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1">Gaia's Garden</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Toby Hemenway</p>
-                            <p class="text-xs text-slate-400">Home-scale permaculture as a practical entry point for Earth Care.</p>
+                        <a href="https://www.chelseagreen.com/product/gaias-garden/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Gaia's Garden</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Toby Hemenway</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">A practical entry point into home-scale permaculture design.</p>
                         </a>
-                        <a href="https://www.aldoleopold.org/about/aldo-leopold/sand-county-almanac/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-emerald-400 font-bold mb-1">A Sand County Almanac</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Aldo Leopold</p>
-                            <p class="text-xs text-slate-400">Timeless reflections on ecological ethics and responsibility.</p>
+                        <a href="https://designschool.mn.co/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-emerald-400 transition">Design School for Earth</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Joe Brewer</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">A global campus for the practice of bioregional regeneration.</p>
                         </a>
                     </div>
                 </div>
 
-                <!-- Section 4 -->
+                <!-- Category IV -->
                 <div class="reveal">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-8 flex items-center">
-                        <span class="mr-4">IV. The Dance Team</span>
-                        <div class="h-px bg-slate-800 flex-grow"></div>
-                    </h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <a href="https://www.activehope.info/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1">Active Hope</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Joanna Macy</p>
-                            <p class="text-xs text-slate-400">Facing the mess we are in without going crazy.</p>
+                    <div class="flex items-center mb-12">
+                        <h4 class="text-xs font-bold uppercase tracking-[0.3em] text-blue-500">IV. The Dance Team</h4>
+                        <div class="h-px bg-slate-800 flex-grow ml-8"></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <a href="https://www.activehope.info/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">Active Hope</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Joanna Macy</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Psychological frameworks for facing the "Great Unraveling."</p>
                         </a>
-                        <a href="https://valariekaur.com/see-no-stranger/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1">See No Stranger</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Valarie Kaur</p>
-                            <p class="text-xs text-slate-400">Revolutionary Love as a force for social and ecological justice.</p>
+                        <a href="https://valariekaur.com/see-no-stranger/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">Revolutionary Love</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Valarie Kaur</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Social justice as an evolutionary force of compassion.</p>
                         </a>
-                        <a href="https://peterblock.com/books/community-the-structure-of-belonging/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1">Community</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">Peter Block</p>
-                            <p class="text-xs text-slate-400">Fostering shared belonging in your bioregion.</p>
+                        <a href="https://peterblock.com/books/community-the-structure-of-belonging/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">Community</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">Peter Block</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">Fostering connection and ownership within your bioregion.</p>
                         </a>
-                        <a href="https://www.gratefulness.org/" target="_blank" class="resource-card p-6 bg-slate-900/40 rounded-xl block group">
-                            <h5 class="text-blue-400 font-bold mb-1">Gratefulness</h5>
-                            <p class="text-[10px] text-slate-500 uppercase mb-3">David Steindl-Rast</p>
-                            <p class="text-xs text-slate-400">Anchoring for finding joy in a traumatic world.</p>
+                        <a href="https://www.gratefulness.org/" target="_blank" class="resource-card p-8 bg-slate-900/40 rounded-2xl block group">
+                            <h5 class="text-white font-bold mb-2 group-hover:text-blue-400 transition">A Heart in Fullness</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-4">David Steindl-Rast</p>
+                            <p class="text-xs text-slate-400 leading-relaxed">The relationship between gratitude, joy, and survival.</p>
                         </a>
                     </div>
                 </div>
@@ -371,66 +398,108 @@
         </div>
     </main>
 
+    <!-- Page: ACTION -->
+    <main id="page-action" class="page-content pt-32 pb-24">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="reveal text-emerald-400 font-bold uppercase tracking-widest text-xs mb-4">Next Steps</h2>
+            <h3 class="reveal text-6xl font-bold serif mb-12">The Action Map</h3>
+            <p class="reveal text-2xl font-light text-slate-300 mb-16">"If today is a good day to die, have you ensured that tomorrow is a good day for a child to be born?"</p>
+            
+            <div class="grid md:grid-cols-2 gap-12 text-left">
+                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
+                    <h4 class="text-xl font-bold mb-4">01. Define Your Life-Place</h4>
+                    <p class="text-slate-400 text-sm">Download the Bioregional Explorer Workbook. Identify your local watershed and native ecosystem boundaries.</p>
+                </div>
+                <div class="reveal bg-slate-900 p-10 rounded-3xl border border-slate-800">
+                    <h4 class="text-xl font-bold mb-4">02. Decouple From Global</h4>
+                    <p class="text-slate-400 text-sm">Review your "Cosmic Credit Card." Identify three global supply chains you can replace with local mutual aid networks.</p>
+                </div>
+            </div>
+
+            <div class="reveal mt-20 bg-emerald-600 p-12 rounded-[3rem] text-white">
+                <h4 class="text-3xl font-bold serif mb-4">Sign the Papers.</h4>
+                <p class="text-lg opacity-90 mb-8">Refusing to stay in a toxic relationship with extraction is the defining choice of our time. Join the 2026 Movement.</p>
+                <button onclick="window.open('https://youtu.be/_FjQT1H79Ho', '_blank')" class="bg-white text-emerald-600 px-8 py-4 rounded-full font-bold uppercase text-xs tracking-widest hover:bg-slate-100 transition">Join the Community</button>
+            </div>
+        </div>
+    </main>
+
     <!-- Footer -->
-    <footer class="py-20 border-t border-slate-900 mt-20 bg-slate-950">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-8">
+    <footer class="py-20 border-t border-slate-900 bg-slate-950">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-12">
             <div>
-                <div class="text-2xl font-bold mb-2">DWTE <span class="text-emerald-500">2026</span></div>
-                <p class="text-slate-500 text-xs max-w-sm">
+                <div class="text-2xl font-bold mb-4">DWTE <span class="text-emerald-500">2026</span></div>
+                <p class="text-slate-500 text-xs max-w-sm leading-relaxed">
                     Based on "Dance With The Elephant: Life's Cosmic Equation 2.0" by Duane Kuss & Don Calhoun. 
+                    Personal Healing &middot; Planetary Survival &middot; Deep Time Legacy.
                 </p>
             </div>
-            <div class="text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">
-                &copy; 2026 Rewriting Life's Cosmic Equation
+            <div class="text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em] space-y-2">
+                <div>&copy; 2026 Rewriting the Cosmic Equation</div>
+                <div class="opacity-50">Systems-Health Paradigm 2.0.0</div>
             </div>
         </div>
     </footer>
 
     <script>
         /**
-         * Navigation Logic
+         * SPA Navigation Logic
          */
         function showPage(pageId) {
-            // Remove active class from all pages
+            // Reset mobile menu
+            document.getElementById('mobile-menu').style.display = 'none';
+
+            // Hide all pages
             document.querySelectorAll('.page-content').forEach(page => {
                 page.classList.remove('active');
             });
 
-            // Show current page
-            const target = document.getElementById(`page-${pageId}`);
-            if (target) {
-                target.classList.add('active');
+            // Show target page
+            const targetPage = document.getElementById(`page-${pageId}`);
+            if (targetPage) {
+                targetPage.classList.add('active');
                 window.scrollTo(0, 0);
-                
-                // Re-trigger reveal animations for the new page
-                setTimeout(triggerReveal, 50);
+                // Trigger reveal for new content
+                setTimeout(triggerReveal, 100);
             }
 
-            // Update Nav Links
+            // Update Nav States
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
-                if (link.textContent.toLowerCase().includes(pageId)) link.classList.add('active');
+                if (link.textContent.toLowerCase().includes(pageId)) {
+                    link.classList.add('active');
+                }
             });
+            // Handle home link explicitly
             if(pageId === 'home') document.querySelectorAll('.nav-link')[0].classList.add('active');
         }
 
         /**
-         * Enhanced Animation Reveal Logic
+         * Reveal Animation Controller
          */
         function triggerReveal() {
-            const elements = document.querySelectorAll('.page-content.active .reveal');
-            elements.forEach((el, index) => {
+            const activePage = document.querySelector('.page-content.active');
+            const reveals = activePage.querySelectorAll('.reveal');
+            reveals.forEach((el, index) => {
                 setTimeout(() => {
                     el.classList.add('visible');
-                }, index * 100);
+                }, index * 80);
             });
         }
 
-        // Initialize animations on first load
+        /**
+         * Mobile Nav Toggle
+         */
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.style.display = (menu.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        // Init
         window.addEventListener('load', () => {
-            // Pre-process elements with reveal class
-            document.querySelectorAll('h1, h2, h3, h4, h5, p, .resource-card, .bg-slate-900, .grid > div').forEach(el => {
-                if (!el.classList.contains('reveal')) el.classList.add('reveal');
+            // Ensure every element that needs revealing is marked
+            document.querySelectorAll('h1, h2, h3, h4, h5, p, .resource-card, .bg-slate-900').forEach(el => {
+                if(!el.classList.contains('reveal')) el.classList.add('reveal');
             });
             triggerReveal();
         });
